@@ -6,6 +6,7 @@ const port = 3000;
 
 app.use(express.json());
 
+// Objeto de referencia (el de la infografía)
 const productoReferencia = {
   foto: '/img/isdin-spf50.jpg',
   titulo: 'ISDIN Protector Solar Fusion Water Magic Tono Medium SPF50 50ml',
@@ -15,6 +16,12 @@ const productoReferencia = {
   cantidad: 1
 };
 
+// Ruta de prueba
+app.get('/', (req, res) => {
+  res.json({ mensaje: 'API funcionando' });
+});
+
+// Ver todos los productos guardados
 app.get('/productos', async (req, res) => {
   try {
     const productos = await Producto.find();
@@ -24,6 +31,7 @@ app.get('/productos', async (req, res) => {
   }
 });
 
+// Ruta 1: guarda lo que llegue en req.body (frontend o Postman)
 app.post('/producto', async (req, res) => {
   try {
     const producto = new Producto(req.body);
@@ -41,6 +49,7 @@ app.post('/producto', async (req, res) => {
   }
 });
 
+// Ruta 2: guarda directamente el objeto de referencia, sin enviar body
 app.post('/producto/referencia', async (req, res) => {
   try {
     const producto = new Producto(productoReferencia);
@@ -57,12 +66,16 @@ app.post('/producto/referencia', async (req, res) => {
   }
 });
 
-conectarDB().then(() => {
-  app.listen(port, (error) => {
-    if (error) {
-      console.error('No se pudo iniciar el servidor:', error.message);
-      return;
-    }
+// Conecta a MongoDB (Mongoose espera la conexión antes de ejecutar consultas)
+conectarDB().catch((error) => {
+  console.error('Error al conectar MongoDB:', error.message);
+});
+
+// Solo en tu PC: en Vercel no se usa listen
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
   });
-});
+}
+
+export default app;
