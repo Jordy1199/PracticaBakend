@@ -1,12 +1,11 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-// Conexión
-/*async function main (){
-*/
+// Conexión: usa la variable de entorno en Vercel y la local en tu PC
 export async function conectarDB() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/shop');
-  console.log('Database running ok');
+  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/shop';
+  await mongoose.connect(uri);
+  console.log('MongoDB conectado');
 }
 
 // Modelo
